@@ -78,9 +78,9 @@ Explore::Explore()
         private_nh_.advertise<visualization_msgs::MarkerArray>("frontiers", 10);
   }
 
-  ROS_INFO("Waiting to connect to move_base server");
-  move_base_client_.waitForServer();
-  ROS_INFO("Connected to move_base server");
+  // ROS_INFO("Waiting to connect to move_base server");
+  // move_base_client_.waitForServer();
+  // ROS_INFO("Connected to move_base server");
 
   exploring_timer_ =
       relative_nh_.createTimer(ros::Duration(1. / planner_frequency_),
@@ -182,7 +182,7 @@ void Explore::makePlan()
   auto pose = costmap_client_.getRobotPose();
   // get frontiers sorted according to cost
   auto frontiers = search_.searchFrom(pose.position);
-  ROS_DEBUG("found %lu frontiers", frontiers.size());
+  ROS_ERROR("current pose:(%f,%f),found %lu frontiers",pose.position.x,pose.position.y, frontiers.size());
   for (size_t i = 0; i < frontiers.size(); ++i) {
     ROS_DEBUG("frontier %zd cost: %f", i, frontiers[i].cost);
   }
@@ -231,17 +231,17 @@ void Explore::makePlan()
   }
 
   // send goal to move_base if we have something new to pursue
-  move_base_msgs::MoveBaseGoal goal;
-  goal.target_pose.pose.position = target_position;
-  goal.target_pose.pose.orientation.w = 1.;
-  goal.target_pose.header.frame_id = costmap_client_.getGlobalFrameID();
-  goal.target_pose.header.stamp = ros::Time::now();
-  move_base_client_.sendGoal(
-      goal, [this, target_position](
-                const actionlib::SimpleClientGoalState& status,
-                const move_base_msgs::MoveBaseResultConstPtr& result) {
-        reachedGoal(status, result, target_position);
-      });
+  // move_base_msgs::MoveBaseGoal goal;
+  // goal.target_pose.pose.position = target_position;
+  // goal.target_pose.pose.orientation.w = 1.;
+  // goal.target_pose.header.frame_id = costmap_client_.getGlobalFrameID();
+  // goal.target_pose.header.stamp = ros::Time::now();
+  // move_base_client_.sendGoal(
+  //     goal, [this, target_position](
+  //               const actionlib::SimpleClientGoalState& status,
+  //               const move_base_msgs::MoveBaseResultConstPtr& result) {
+  //       reachedGoal(status, result, target_position);
+  //     });
 }
 
 bool Explore::goalOnBlacklist(const geometry_msgs::Point& goal)
